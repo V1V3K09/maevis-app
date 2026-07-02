@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import heroBg1 from '../assets/hero_bg.png';
-import heroBg2 from '../assets/hero_bg2.png';
 
 const slides = [
   {
     id: 1,
-    bg: heroBg1,
+    bg: '/genesis.png',
     subtitle: "MAEVIS PRESENTS",
     titleLine1: "GENESIS",
     titleLine2: "4",
@@ -16,7 +14,7 @@ const slides = [
   },
   {
     id: 2,
-    bg: heroBg2,
+    bg: '/imtlcard.png',
     subtitle: "SYSTEM ACCESS CODES",
     titleLine1: "TERMINAL",
     titleLine2: "D9",
