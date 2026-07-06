@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-// Drei Center removed
 import { motion, AnimatePresence } from 'framer-motion';
 import AutoCroppedLogo from './AutoCroppedLogo';
 import * as THREE from 'three';
@@ -308,42 +307,173 @@ function VolumetricLightBeam() {
   const meshRef = useRef();
   
   // Custom transparent shader to simulate a volumetric light cone
-  const coneMaterial = new THREE.ShaderMaterial({
-    transparent: true,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending,
-    uniforms: {
-      uColor: { value: new THREE.Color('#4ADE80') },
-    },
-    vertexShader: `
-      varying vec3 vNormal;
-      varying vec3 vPosition;
-      void main() {
-        vNormal = normalize(normalMatrix * normal);
-        vPosition = position;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-      }
-    `,
-    fragmentShader: `
-      uniform vec3 uColor;
-      varying vec3 vNormal;
-      varying vec3 vPosition;
-      void main() {
-        // Fade out light cone at vertical limits and sides
-        float intensity = pow(0.6 - dot(vNormal, vec3(0, 0, 1.0)), 2.0);
-        float verticalFade = smoothstep(-4.0, 1.0, vPosition.y) * (1.0 - smoothstep(0.0, 4.0, vPosition.y));
-        gl_FragColor = vec4(uColor, intensity * 0.22 * verticalFade);
-      }
-    `
-  });
+  const coneMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      uniforms: {
+        uColor: { value: new THREE.Color('#4ADE80') },
+      },
+      vertexShader: `
+        varying vec3 vNormal;
+        varying vec3 vPosition;
+        void main() {
+          vNormal = normalize(normalMatrix * normal);
+          vPosition = position;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 uColor;
+        varying vec3 vNormal;
+        varying vec3 vPosition;
+        void main() {
+          // Fade out light cone at vertical limits and sides
+          float intensity = pow(0.6 - dot(vNormal, vec3(0, 0, 1.0)), 2.0);
+          float verticalFade = smoothstep(-4.0, 1.0, vPosition.y) * (1.0 - smoothstep(0.0, 4.0, vPosition.y));
+          gl_FragColor = vec4(uColor, intensity * 0.22 * verticalFade);
+        }
+      `
+    });
+  }, []);
 
   return (
-    <mesh ref={meshRef} position={[0, 1.0, 0]} rotation={[0, 0, 0]}>
+    <mesh ref={meshRef} position={[0, 1.0, 0]}>
       <cylinderGeometry args={[0.05, 1.8, 4.0, 32, 1, true]} />
       <primitive object={coneMaterial} attach="material" />
     </mesh>
   );
 }
+
+// ==========================================
+// Isolated & Memoized LoaderCanvas Component
+// ==========================================
+const LoaderCanvas = React.memo(({
+  camera,
+  lookAtTarget,
+  collectible,
+  shaderMaterial,
+  packageBox,
+  packageMaterial,
+  gantry,
+  nozzle,
+  floorGrid,
+  isPrintingRef
+}) => {
+  return (
+    <div className="absolute inset-0 w-full h-full">
+      <Canvas gl={{ antialias: true }}>
+        <color attach="background" args={['#000000']} />
+        
+        {/* Cinematic Camera Controller */}
+        <CameraController cameraRef={camera} lookAtTarget={lookAtTarget} />
+
+        {/* Ambient Base Shadow Lighting */}
+        <ambientLight intensity={0.8} />
+        <directionalLight position={[2, 5, 2]} intensity={2.2} color="#ffffff" />
+        
+        {/* Main Green Volumetric Spotlight */}
+        <spotLight 
+          position={[0, 4.0, 0]} 
+          angle={0.55} 
+          penumbra={0.6} 
+          intensity={35.0} 
+          decay={0}
+          color="#4ADE80" 
+        />
+        
+        {/* Volumetric spotlight cone mesh */}
+        <VolumetricLightBeam />
+
+        {/* Three.js Scene Contents */}
+        <group>
+          {/* 3D printed Stylized Brutalist 'M' Logo (MAEVIS Brand Identifier) */}
+          <group ref={collectible} position={[0, -0.15, 0]}>
+            {shaderMaterial && (
+              <group>
+                {/* Left Vertical Pillar */}
+                <mesh position={[-0.45, 0.35, 0]}>
+                  <boxGeometry args={[0.2, 1.1, 0.2]} />
+                  <primitive object={shaderMaterial} attach="material" />
+                </mesh>
+                {/* Right Vertical Pillar */}
+                <mesh position={[0.45, 0.35, 0]}>
+                  <boxGeometry args={[0.2, 1.1, 0.2]} />
+                  <primitive object={shaderMaterial} attach="material" />
+                </mesh>
+                {/* Left Diagonal Beam */}
+                <mesh position={[-0.22, 0.45, 0]} rotation={[0, 0, Math.PI / 5.5]}>
+                  <boxGeometry args={[0.16, 0.75, 0.2]} />
+                  <primitive object={shaderMaterial} attach="material" />
+                </mesh>
+                {/* Right Diagonal Beam */}
+                <mesh position={[0.22, 0.45, 0]} rotation={[0, 0, -Math.PI / 5.5]}>
+                  <boxGeometry args={[0.16, 0.75, 0.2]} />
+                  <primitive object={shaderMaterial} attach="material" />
+                </mesh>
+              </group>
+            )}
+          </group>
+
+          {/* Vacuum Glossy Package Box */}
+          <mesh ref={packageBox} position={[0, 0.45, 0]} scale={[1.8, 1.8, 1.8]}>
+            <boxGeometry args={[1.7, 1.7, 1.7]} />
+            <meshPhysicalMaterial 
+              ref={packageMaterial}
+              color="#ffffff"
+              roughness={0.08}
+              metalness={0.05}
+              transparent={true}
+              opacity={0} // Fades in during vacuum seal stage
+              transmission={0.88}
+              thickness={1.2}
+              depthWrite={false}
+              side={THREE.DoubleSide}
+            />
+          </mesh>
+
+          {/* 3D Printer Gantry & Nozzle Assembly */}
+          <group ref={gantry} position={[0, 5.0, 0]}>
+            {/* Horizontal Guide Rail (X bar) */}
+            <mesh position={[0, 0.1, 0]}>
+              <boxGeometry args={[4.2, 0.12, 0.12]} />
+              <meshStandardMaterial color="#444444" roughness={0.5} metalness={0.8} />
+            </mesh>
+            {/* Horizontal Carriage Block */}
+            <group ref={nozzle}>
+              <mesh position={[0, 0.05, 0]}>
+                <boxGeometry args={[0.5, 0.3, 0.5]} />
+                <meshStandardMaterial color="#555555" roughness={0.4} metalness={0.9} />
+              </mesh>
+              {/* Extruder nozzle cone */}
+              <mesh position={[0, -0.15, 0]} rotation={[Math.PI, 0, 0]}>
+                <coneGeometry args={[0.08, 0.25, 8]} />
+                <meshStandardMaterial color="#888888" roughness={0.2} metalness={0.9} />
+              </mesh>
+              {/* Glowing print head laser indicator pointlight */}
+              <pointLight position={[0, -0.28, 0]} intensity={12.0} distance={2.5} decay={1} color="#4ADE80" />
+            </group>
+          </group>
+
+          {/* Bottom Print Bed */}
+          <group ref={floorGrid} position={[0, -0.4, 0]}>
+            {/* Plate */}
+            <mesh rotation={[-Math.PI / 2, 0, 0]}>
+              <planeGeometry args={[5, 5]} />
+              <meshStandardMaterial color="#141416" roughness={0.8} />
+            </mesh>
+            {/* Hexagonal grid lines */}
+            <gridHelper args={[6, 24, '#4ADE80', '#2C2C2C']} position={[0, 0.01, 0]} />
+          </group>
+        </group>
+
+        {/* Custom Nozzle Jittering Loop */}
+        <NozzleController nozzleRef={nozzle} gantryRef={gantry} isPrinting={isPrintingRef} />
+      </Canvas>
+    </div>
+  );
+});
 
 // ==========================================
 // Core Loader Component
@@ -364,13 +494,12 @@ export default function ThreeLoader({ onComplete }) {
   const logoOverlay = useRef();
   const logoText = useRef();
   
-  const shaderMaterialRef = useRef();
   const isPrintingRef = useRef(false);
   const lookAtTarget = useRef(new THREE.Vector3(0, 0.45, 0));
 
-  // Set up uniforms for Torus Knot custom material
-  useEffect(() => {
-    shaderMaterialRef.current = new THREE.ShaderMaterial({
+  // Set up uniforms for Torus Knot custom material instantly using useMemo
+  const shaderMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
       uniforms: THREE.UniformsUtils.clone(PrintingShaderMaterial.uniforms),
       vertexShader: PrintingShaderMaterial.vertexShader,
       fragmentShader: PrintingShaderMaterial.fragmentShader,
@@ -402,11 +531,11 @@ export default function ThreeLoader({ onComplete }) {
     window.addEventListener('click', handleUnlockAudio);
     window.addEventListener('touchstart', handleUnlockAudio);
 
-    // Failsafe: if WebGL canvas fails to load or animation hangs, bypass loader after 4.5 seconds
+    // Failsafe: if WebGL canvas fails to load or animation hangs, bypass loader after 10 seconds
     const failsafeTimer = setTimeout(() => {
       console.warn("ThreeLoader: WebGL mount timeout, running failsafe bypass");
       if (onComplete) onComplete();
-    }, 4500);
+    }, 10000);
 
     // Auto-start printing timeline sequence
     const timer = setTimeout(() => {
@@ -446,8 +575,8 @@ export default function ThreeLoader({ onComplete }) {
     camera.current.lookAt(0, 0, 0);
     
     // Initialize shader uniform Y heights relative to world coordinates
-    gsap.set(shaderMaterialRef.current.uniforms.uPrintProgress, { value: -0.4 });
-    gsap.set(shaderMaterialRef.current.uniforms.uLaserProgress, { value: 0.95 });
+    gsap.set(shaderMaterial.uniforms.uPrintProgress, { value: -0.4 });
+    gsap.set(shaderMaterial.uniforms.uLaserProgress, { value: 0.95 });
 
     // ----------------------------------------------------
     // STAGE 1: Dark workshop camera pivot & printer slide-in
@@ -500,7 +629,7 @@ export default function ThreeLoader({ onComplete }) {
     }, 1.2);
 
     // Animate Custom Shader printing reveal uniform (rise through model Y limits)
-    timeline.to(shaderMaterialRef.current.uniforms.uPrintProgress, {
+    timeline.to(shaderMaterial.uniforms.uPrintProgress, {
       value: 0.78,
       duration: 2.2,
       ease: "linear"
@@ -530,7 +659,7 @@ export default function ThreeLoader({ onComplete }) {
     }, 3.4);
 
     // Trigger Laser Scan Sweep (uniform moves top-to-bottom through world Y limits)
-    timeline.to(shaderMaterialRef.current.uniforms.uLaserProgress, {
+    timeline.to(shaderMaterial.uniforms.uLaserProgress, {
       value: -0.45,
       duration: 1.2,
       ease: "power1.inOut",
@@ -627,6 +756,17 @@ export default function ThreeLoader({ onComplete }) {
     }, 6.5);
   };
 
+  const handleStart = (withAudio) => {
+    setGateActive(false);
+    if (withAudio) {
+      synth.init();
+      setMuted(false);
+    } else {
+      setMuted(true);
+      synth.setMute(true);
+    }
+  };
+
   return (
     <motion.div 
       ref={loaderContainer}
@@ -676,119 +816,20 @@ export default function ThreeLoader({ onComplete }) {
         )}
       </AnimatePresence>
 
-      {/* Main R3F Canvas Container */}
+      {/* Main R3F Canvas Container (Isolated from progress state updates) */}
       {!gateActive && (
-        <div className="absolute inset-0 w-full h-full">
-          <Canvas gl={{ antialias: true }}>
-            <color attach="background" args={['#000000']} />
-            
-            {/* Cinematic Camera Controller */}
-            <CameraController cameraRef={camera} lookAtTarget={lookAtTarget} />
-
-            {/* Ambient Base Shadow Lighting */}
-            <ambientLight intensity={0.8} />
-            <directionalLight position={[2, 5, 2]} intensity={2.2} color="#ffffff" />
-            
-            {/* Main Green Volumetric Spotlight */}
-            <spotLight 
-              position={[0, 4.0, 0]} 
-              angle={0.55} 
-              penumbra={0.6} 
-              intensity={35.0} 
-              decay={0}
-              color="#4ADE80" 
-              castShadow
-            />
-            
-            {/* Volumetric spotlight cone mesh */}
-            <VolumetricLightBeam />
-
-            {/* Three.js Scene Contents */}
-            <group>
-              {/* 3D printed Stylized Brutalist 'M' Logo (MAEVIS Brand Identifier) */}
-              <group ref={collectible} position={[0, -0.15, 0]}>
-                {shaderMaterialRef.current && (
-                  <group>
-                    {/* Left Vertical Pillar */}
-                    <mesh castShadow receiveShadow position={[-0.45, 0.35, 0]}>
-                      <boxGeometry args={[0.2, 1.1, 0.2]} />
-                      <primitive object={shaderMaterialRef.current} attach="material" />
-                    </mesh>
-                    {/* Right Vertical Pillar */}
-                    <mesh castShadow receiveShadow position={[0.45, 0.35, 0]}>
-                      <boxGeometry args={[0.2, 1.1, 0.2]} />
-                      <primitive object={shaderMaterialRef.current} attach="material" />
-                    </mesh>
-                    {/* Left Diagonal Beam */}
-                    <mesh castShadow receiveShadow position={[-0.22, 0.45, 0]} rotation={[0, 0, Math.PI / 5.5]}>
-                      <boxGeometry args={[0.16, 0.75, 0.2]} />
-                      <primitive object={shaderMaterialRef.current} attach="material" />
-                    </mesh>
-                    {/* Right Diagonal Beam */}
-                    <mesh castShadow receiveShadow position={[0.22, 0.45, 0]} rotation={[0, 0, -Math.PI / 5.5]}>
-                      <boxGeometry args={[0.16, 0.75, 0.2]} />
-                      <primitive object={shaderMaterialRef.current} attach="material" />
-                    </mesh>
-                  </group>
-                )}
-              </group>
-
-              {/* Vacuum Glossy Package Box */}
-              <mesh ref={packageBox} position={[0, 0.45, 0]} scale={[1.8, 1.8, 1.8]}>
-                <boxGeometry args={[1.7, 1.7, 1.7]} />
-                <meshPhysicalMaterial 
-                  ref={packageMaterial}
-                  color="#ffffff"
-                  roughness={0.08}
-                  metalness={0.05}
-                  transparent={true}
-                  opacity={0} // Fades in during vacuum seal stage
-                  transmission={0.88}
-                  thickness={1.2}
-                  depthWrite={false}
-                  side={THREE.DoubleSide}
-                />
-              </mesh>
-
-              {/* 3D Printer Gantry & Nozzle Assembly */}
-              <group ref={gantry} position={[0, 5.0, 0]}>
-                {/* Horizontal Guide Rail (X bar) */}
-                <mesh position={[0, 0.1, 0]}>
-                  <boxGeometry args={[4.2, 0.12, 0.12]} />
-                  <meshStandardMaterial color="#444444" roughness={0.5} metalness={0.8} />
-                </mesh>
-                {/* Horizontal Carriage Block */}
-                <group ref={nozzle}>
-                  <mesh position={[0, 0.05, 0]}>
-                    <boxGeometry args={[0.5, 0.3, 0.5]} />
-                    <meshStandardMaterial color="#555555" roughness={0.4} metalness={0.9} />
-                  </mesh>
-                  {/* Extruder nozzle cone */}
-                  <mesh position={[0, -0.15, 0]} rotation={[Math.PI, 0, 0]}>
-                    <coneGeometry args={[0.08, 0.25, 8]} />
-                    <meshStandardMaterial color="#888888" roughness={0.2} metalness={0.9} />
-                  </mesh>
-                  {/* Glowing print head laser indicator pointlight */}
-                  <pointLight position={[0, -0.28, 0]} intensity={12.0} distance={2.5} decay={1} color="#4ADE80" />
-                </group>
-              </group>
-
-              {/* Bottom Print Bed */}
-              <group ref={floorGrid} position={[0, -0.4, 0]}>
-                {/* Plate */}
-                <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-                  <planeGeometry args={[5, 5]} />
-                  <meshStandardMaterial color="#141416" roughness={0.8} />
-                </mesh>
-                {/* Hexagonal grid lines */}
-                <gridHelper args={[6, 24, '#4ADE80', '#2C2C2C']} position={[0, 0.01, 0]} />
-              </group>
-            </group>
-
-            {/* Custom Nozzle Jittering Loop */}
-            <NozzleController nozzleRef={nozzle} gantryRef={gantry} isPrinting={isPrintingRef} />
-          </Canvas>
-        </div>
+        <LoaderCanvas
+          camera={camera}
+          lookAtTarget={lookAtTarget}
+          collectible={collectible}
+          shaderMaterial={shaderMaterial}
+          packageBox={packageBox}
+          packageMaterial={packageMaterial}
+          gantry={gantry}
+          nozzle={nozzle}
+          floorGrid={floorGrid}
+          isPrintingRef={isPrintingRef}
+        />
       )}
 
       {/* UI Hud & Mute controls */}
