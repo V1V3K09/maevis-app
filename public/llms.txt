@@ -1,0 +1,8 @@
+# MAEVIS
+
+> Brutalist high-precision 3D printing, custom engineering, and slow-batch polymer fabrication.
+
+## Sections
+- [Home](/) - Main interactive brand landing page and polymer library.
+- [Shop](/shop) - Custom 3D prints showcase catalog and print queue scheduler.
+- [Fabricate](/fabricate) - WebGL-based custom parametric model configuration suite.
