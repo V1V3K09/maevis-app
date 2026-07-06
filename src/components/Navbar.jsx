@@ -30,8 +30,8 @@ export default function Navbar({ activeTab: propActiveTab, onTabChange }) {
       transition={{ duration: 0.4 }}
       className="w-full bg-black text-white font-mono border-b border-[#2C2C2C] select-none z-50 relative"
     >
-      {/* Top Meta Bar */}
       <motion.div 
+        aria-hidden="true"
         initial={{ y: -15, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.1, type: "spring", stiffness: 200, damping: 20 }}
@@ -109,24 +109,24 @@ export default function Navbar({ activeTab: propActiveTab, onTabChange }) {
                   className="flex flex-col items-center group cursor-pointer focus:outline-none"
                 >
                   <span className="relative font-bold text-sm tracking-widest transition-colors duration-200">
-                    <span className={`transition-transform duration-300 inline-block mr-1 ${isActive ? 'text-[#4ADE80] scale-110' : 'text-white/40 group-hover:text-white group-hover:translate-x-[-2px]'}`}>
+                    <span aria-hidden="true" className={`transition-transform duration-300 inline-block mr-1 ${isActive ? 'text-[#4ADE80] scale-110' : 'text-white/40 group-hover:text-white group-hover:translate-x-[-2px]'}`}>
                       [
                     </span>
-                    <span className={`transition-colors duration-200 ${isActive ? 'text-[#4ADE80] text-shadow-[0_0_8px_rgba(74,222,128,0.5)]' : 'text-white group-hover:text-[#4ADE80]'}`}>
+                    <span className={`transition-colors duration-200 ${isActive ? 'text-[#4ADE80]' : 'text-white group-hover:text-[#4ADE80]'}`}>
                       {item.label}
                     </span>
-                    <span className={`transition-transform duration-300 inline-block ml-1 ${isActive ? 'text-[#4ADE80] scale-110' : 'text-white/40 group-hover:text-white group-hover:translate-x-[2px]'}`}>
+                    <span aria-hidden="true" className={`transition-transform duration-300 inline-block ml-1 ${isActive ? 'text-[#4ADE80] scale-110' : 'text-white/40 group-hover:text-white group-hover:translate-x-[2px]'}`}>
                       ]
                     </span>
                     
                     {isActive && (
-                      <span className="absolute -top-1.5 left-1/2 transform -translate-x-1/2 text-[6px] text-[#4ADE80] animate-pulse">
+                      <span aria-hidden="true" className="absolute -top-1.5 left-1/2 transform -translate-x-1/2 text-[6px] text-[#4ADE80] animate-pulse">
                         ●
                       </span>
                     )}
                   </span>
                   
-                  <span className="text-[9px] mt-1.5 tracking-wider transition-colors duration-200 text-[#6B6B6B] group-hover:text-white/60">
+                  <span aria-hidden="true" className="text-[9px] mt-1.5 tracking-wider transition-colors duration-200 text-[#6B6B6B] group-hover:text-white/60">
                     {item.sub}
                   </span>
                 </motion.button>
@@ -137,6 +137,7 @@ export default function Navbar({ activeTab: propActiveTab, onTabChange }) {
 
         {/* Right Section: Status Panel */}
         <motion.div 
+          aria-hidden="true"
           initial={{ x: 20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.3, type: "spring", stiffness: 160, damping: 18 }}
@@ -279,7 +280,7 @@ export default function Navbar({ activeTab: propActiveTab, onTabChange }) {
                         {item.label}
                       </span>
                     </span>
-                    <span className="font-mono text-[9px] text-[#6B6B6B] tracking-wider">
+                    <span aria-hidden="true" className="font-mono text-[9px] text-[#6B6B6B] tracking-wider">
                       {item.sub}
                     </span>
                   </motion.button>
@@ -288,7 +289,7 @@ export default function Navbar({ activeTab: propActiveTab, onTabChange }) {
             </div>
 
             {/* Mobile Status & Diagnostic Board */}
-            <div className="p-6 bg-[#070707] grid grid-cols-2 gap-6 text-xs text-[#BEBEBE] font-mono relative">
+            <div aria-hidden="true" className="p-6 bg-[#070707] grid grid-cols-2 gap-6 text-xs text-[#BEBEBE] font-mono relative">
               <div className="flex flex-col gap-3">
                 <span className="text-[10px] text-[#4ADE80] tracking-widest font-bold border-b border-[#2C2C2C] pb-1.5">
                   [ NODE_DIAGNOSTICS ]

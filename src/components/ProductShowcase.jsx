@@ -54,6 +54,7 @@ export default function ProductShowcase({
     <section className="w-full bg-black py-12 px-4 md:px-8 max-w-[1280px] mx-auto select-none font-mono border-t border-[#1C1C1C]">
       {/* Section Sub-Header */}
       <motion.div 
+        aria-hidden="true"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}

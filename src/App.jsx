@@ -150,7 +150,7 @@ function App() {
                 <PhilosophySection />
               </div>
 
-              <div className="flex flex-col items-center my-8 opacity-50 font-mono text-[9px] tracking-[0.3em] text-white">
+              <div aria-hidden="true" className="flex flex-col items-center my-8 opacity-50 font-mono text-[9px] tracking-[0.3em] text-white">
                 <span>[ BATCH_COORD: EXPLORE → UNDERSTAND ]</span>
                 <span className="animate-bounce mt-1">↓</span>
               </div>
@@ -160,7 +160,7 @@ function App() {
                 <ProcessSection />
               </div>
 
-              <div className="flex flex-col items-center my-8 opacity-50 font-mono text-[9px] tracking-[0.3em] text-white">
+              <div aria-hidden="true" className="flex flex-col items-center my-8 opacity-50 font-mono text-[9px] tracking-[0.3em] text-white">
                 <span>[ BATCH_COORD: UNDERSTAND → PROPERTIES ]</span>
                 <span className="animate-bounce mt-1">↓</span>
               </div>
@@ -170,7 +170,7 @@ function App() {
                 <MaterialLibrary />
               </div>
 
-              <div className="flex flex-col items-center my-8 opacity-50 font-mono text-[9px] tracking-[0.3em] text-white">
+              <div aria-hidden="true" className="flex flex-col items-center my-8 opacity-50 font-mono text-[9px] tracking-[0.3em] text-white">
                 <span>[ BATCH_COORD: PROPERTIES → SHELVING ]</span>
                 <span className="animate-bounce mt-1">↓</span>
               </div>
@@ -180,7 +180,7 @@ function App() {
                 <FeaturedCollections />
               </div>
 
-              <div className="flex flex-col items-center my-8 opacity-50 font-mono text-[9px] tracking-[0.3em] text-white">
+              <div aria-hidden="true" className="flex flex-col items-center my-8 opacity-50 font-mono text-[9px] tracking-[0.3em] text-white">
                 <span>[ BATCH_COORD: SHELVING → QUALITY_CONTROL ]</span>
                 <span className="animate-bounce mt-1">↓</span>
               </div>
@@ -190,7 +190,7 @@ function App() {
                 <MakingOf />
               </div>
 
-              <div className="flex flex-col items-center my-8 opacity-50 font-mono text-[9px] tracking-[0.3em] text-white">
+              <div aria-hidden="true" className="flex flex-col items-center my-8 opacity-50 font-mono text-[9px] tracking-[0.3em] text-white">
                 <span>[ BATCH_COORD: QUALITY_CONTROL → TERMINAL_CREATE ]</span>
                 <span className="animate-bounce mt-1">↓</span>
               </div>
