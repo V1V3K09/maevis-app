@@ -38,8 +38,16 @@ function App() {
   });
 
   const featuredProducts = [
-    { name: "SKIBIDI TOILET", image: productSkibidi },
-    { name: "BUTTERFLY KNIFE", image: productKnife }
+    { 
+      name: "SKIBIDI TOILET", 
+      image: productSkibidi,
+      gif: "/Skibidi.gif"
+    },
+    { 
+      name: "BUTTERFLY KNIFE", 
+      image: productKnife,
+      gif: "/Butterfly Knife Glow in Drak.gif"
+    }
   ];
 
   const handleTabChange = (tabId) => {
