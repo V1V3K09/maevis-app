@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 
 const textRevealVariants = {
@@ -50,8 +50,6 @@ export default function ProductShowcase({
   description = "Small batch 3D Prints, vacuum-sealed and hand-numbered. Pick up a packet from the workshop tray before the lot sells through.",
   products = []
 }) {
-  const [hoveredIdx, setHoveredIdx] = useState(null);
-
   return (
     <section className="w-full bg-black py-12 px-4 md:px-8 max-w-[1280px] mx-auto select-none font-mono border-t border-[#1C1C1C]">
       {/* Section Sub-Header */}
@@ -100,8 +98,6 @@ export default function ProductShowcase({
           <motion.div 
             key={index} 
             variants={cardRevealVariants}
-            onMouseEnter={() => setHoveredIdx(index)}
-            onMouseLeave={() => setHoveredIdx(null)}
             className="flex flex-col items-center group cursor-pointer"
           >
             {/* Product Card Container */}
@@ -118,7 +114,7 @@ export default function ProductShowcase({
 
               {/* Product Model Image / GIF */}
               <img 
-                src={hoveredIdx === index && product.gif ? product.gif : product.image} 
+                src={product.gif || product.image} 
                 alt={`${product.name} 3D model render`} 
                 className="max-h-[82%] max-w-[82%] object-contain filter drop-shadow-[0_8px_24px_rgba(0,0,0,0.55)] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.07] group-hover:rotate-[3deg]"
               />
