@@ -132,7 +132,7 @@ export default function Hero() {
               textAnchor="middle"
               className="font-display font-black"
               style={{ 
-                fontSize: '180px',
+                fontSize: '160px',
                 letterSpacing: '0.08em',
                 userSelect: 'none'
               }}
@@ -164,10 +164,10 @@ export default function Hero() {
               fill="#4ADE80"
               dominantBaseline="central"
               textAnchor="middle"
-              dy="0.55rem"
+              dy="0.75rem"
               className="font-teko font-bold"
               style={{ 
-                fontSize: '200px',
+                fontSize: '250px',
                 letterSpacing: 'normal', // Normal letter spacing allows Devanagari ligatures to combine correctly
                 userSelect: 'none',
                 filter: 'drop-shadow(0px 0px 15px rgba(74,222,128,0.55))'
