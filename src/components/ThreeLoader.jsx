@@ -402,6 +402,12 @@ export default function ThreeLoader({ onComplete }) {
     window.addEventListener('click', handleUnlockAudio);
     window.addEventListener('touchstart', handleUnlockAudio);
 
+    // Failsafe: if WebGL canvas fails to load or animation hangs, bypass loader after 4.5 seconds
+    const failsafeTimer = setTimeout(() => {
+      console.warn("ThreeLoader: WebGL mount timeout, running failsafe bypass");
+      if (onComplete) onComplete();
+    }, 4500);
+
     // Auto-start printing timeline sequence
     const timer = setTimeout(() => {
       startLoadingTimeline();
@@ -409,6 +415,7 @@ export default function ThreeLoader({ onComplete }) {
 
     return () => {
       clearTimeout(timer);
+      clearTimeout(failsafeTimer);
       synth.cleanup();
       window.removeEventListener('click', handleUnlockAudio);
       window.removeEventListener('touchstart', handleUnlockAudio);

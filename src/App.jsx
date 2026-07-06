@@ -13,7 +13,6 @@ import ProcessSection from './components/ProcessSection';
 import MaterialLibrary from './components/MaterialLibrary';
 import FeaturedCollections from './components/FeaturedCollections';
 import MakingOf from './components/MakingOf';
-import StatisticsSection from './components/StatisticsSection';
 import FabricateTeaser from './components/FabricateTeaser';
 
 // Import GSAP and ScrollTrigger
@@ -184,17 +183,7 @@ function App() {
               </div>
 
               <div className="flex flex-col items-center my-8 opacity-25 font-mono text-[9px] tracking-[0.3em] text-white">
-                <span>[ BATCH_COORD: QUALITY_CONTROL → LOGISTICS ]</span>
-                <span className="animate-bounce mt-1">↓</span>
-              </div>
-
-              {/* 06. STATISTICS [TRUST] */}
-              <div className="reveal-section">
-                <StatisticsSection />
-              </div>
-
-              <div className="flex flex-col items-center my-8 opacity-25 font-mono text-[9px] tracking-[0.3em] text-white">
-                <span>[ BATCH_COORD: LOGISTICS → TERMINAL_CREATE ]</span>
+                <span>[ BATCH_COORD: QUALITY_CONTROL → TERMINAL_CREATE ]</span>
                 <span className="animate-bounce mt-1">↓</span>
               </div>
 

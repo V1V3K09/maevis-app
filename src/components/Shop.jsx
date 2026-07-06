@@ -165,6 +165,13 @@ export default function Shop({ products = [] }) {
     });
   };
 
+  const getProductGif = (name) => {
+    if (name.includes("SKIBIDI")) {
+      return "/Skibidi.gif";
+    }
+    return "/Butterfly Knife Glow in Drak.gif";
+  };
+
   return (
     <div className="flex-grow bg-black text-white font-mono select-none px-4 md:px-8 py-6 max-w-[1280px] w-full mx-auto relative">
       {/* Background grid markings */}
@@ -218,102 +225,130 @@ export default function Shop({ products = [] }) {
       </div>
 
       {/* Product List Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 relative z-10 mb-16">
+      <div className="grid grid-cols-1 gap-12 relative z-10 mb-16">
         {filteredProducts.map((product) => {
           const currentMat = materials[product.id] || 'PLA';
+          const currentCol = colorsState[product.id] || 'MATTE BLACK';
           const price = getProductPrice(product, currentMat);
+          const gifSrc = getProductGif(product.name);
           
           return (
             <div 
               key={product.id}
-              className="border border-[#2C2C2C] bg-[#050505] p-5 rounded-lg flex flex-col md:flex-row gap-6 relative overflow-hidden group hover:border-[#4ADE80] transition-colors duration-300"
+              className="flex flex-col lg:flex-row border border-white/10 rounded-2xl overflow-hidden bg-[#070707] shadow-xl relative group hover:border-[#4ADE80]/40 transition-colors duration-300"
             >
-              {/* Corner brackets */}
-              <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-[#2C2C2C] group-hover:border-[#4ADE80] transition-colors duration-300"></div>
-              <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-[#2C2C2C] group-hover:border-[#4ADE80] transition-colors duration-300"></div>
-              <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-[#2C2C2C] group-hover:border-[#4ADE80] transition-colors duration-300"></div>
-              <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-[#2C2C2C] group-hover:border-[#4ADE80] transition-colors duration-300"></div>
-
-              {/* Product Visual */}
-              <div className="w-full md:w-[220px] aspect-square bg-[#0a0a0a] border border-[#1C1C1C] rounded flex items-center justify-center p-4 relative group-hover:border-[#4ADE80]/20 transition-colors duration-300">
+              {/* Visual Panel Left - Animated GIF Showcase */}
+              <div className="w-full lg:w-1/2 bg-[#0d0d0d] flex items-center justify-center p-8 border-b lg:border-b-0 lg:border-r border-white/10 aspect-video lg:aspect-auto relative overflow-hidden">
+                <div className="absolute top-3 left-3 text-[8px] font-mono text-[#4ADE80] bg-[#4ADE80]/10 px-2.5 py-1 rounded-full tracking-wider uppercase">
+                  [ LIVE MATRIX PREVIEW ]
+                </div>
                 <img 
-                  src={product.image} 
+                  src={gifSrc} 
                   alt={product.name} 
-                  className="max-h-[85%] max-w-[85%] object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-105"
+                  className="max-h-[90%] max-w-[90%] object-contain rounded-lg shadow-2xl transition-transform duration-500 group-hover:scale-102" 
                 />
-                <div className="absolute top-2 left-2 text-[8px] text-[#6B6B6B]">[ CAT-NUM // {product.id.slice(0,4).toUpperCase()} ]</div>
               </div>
 
-              {/* Product Info details */}
-              <div className="flex-1 flex flex-col justify-between">
+              {/* Specifications & Config Right */}
+              <div className="w-full lg:w-1/2 p-8 sm:p-12 flex flex-col justify-between text-left font-mono relative">
                 <div>
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-white font-bold text-sm tracking-wider uppercase group-hover:text-[#4ADE80] transition-colors">
-                      {product.name}
-                    </h3>
+                  <div className="flex justify-between items-start mb-4">
+                    <span className="text-[9px] text-[#4ADE80] font-bold tracking-widest uppercase border border-[#4ADE80]/30 px-2 py-0.5 rounded inline-block">
+                      {product.category}
+                    </span>
                     <span className="text-[9px] text-[#6B6B6B] border border-[#2C2C2C] px-1.5 py-0.5 rounded">
                       STOCK: {product.stock}
                     </span>
                   </div>
-
-                  <p className="text-white/60 text-[10px] leading-relaxed mb-4">
+                  
+                  <h3 className="font-extended text-3xl font-extrabold uppercase text-white mb-2 tracking-tight">
+                    {product.name}
+                  </h3>
+                  
+                  <p className="text-white/50 text-xs leading-relaxed mb-8">
                     {product.description}
                   </p>
 
-                  {/* Specifications table */}
-                  <div className="grid grid-cols-2 gap-2 text-[9px] text-[#6B6B6B] border-t border-[#1C1C1C] pt-3 mb-4 font-mono">
-                    <div>DIMENSIONS: <span className="text-white/80">{product.specifications.dimensions}</span></div>
-                    <div>WEIGHT: <span className="text-white/80">{product.specifications.weight}</span></div>
-                    <div>BUILD TIME: <span className="text-white/80">{product.specifications.printTime}</span></div>
-                    <div>RESOLUTION: <span className="text-white/80">{product.specifications.resolution}</span></div>
+                  {/* Technical Specifications */}
+                  <h4 className="text-[10px] text-white/40 tracking-wider font-bold mb-3 border-b border-white/5 pb-2">TECHNICAL MATRIX</h4>
+                  <div className="grid grid-cols-2 gap-4 text-xs mb-8">
+                    <div>
+                      <span className="text-white/40 text-[9px] block">BOUNDS</span>
+                      <span className="text-white">{product.specifications.dimensions}</span>
+                    </div>
+                    <div>
+                      <span className="text-white/40 text-[9px] block">MASS</span>
+                      <span className="text-white">{product.specifications.weight}</span>
+                    </div>
+                    <div>
+                      <span className="text-white/40 text-[9px] block">PRINT CYCLES</span>
+                      <span className="text-white">{product.specifications.printTime}</span>
+                    </div>
+                    <div>
+                      <span className="text-white/40 text-[9px] block">LAYER HEIGHT</span>
+                      <span className="text-white">{product.specifications.resolution}</span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Material select and Add to Cart */}
-                <div className="border-t border-[#1C1C1C] pt-4 mt-auto">
-                  <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-1 sm:gap-0 mb-3">
-                    <span className="text-[9px] text-[#6B6B6B] tracking-widest font-bold">MATERIAL COMPILE:</span>
-                    <select
-                      value={currentMat}
-                      onChange={(e) => handleMaterialChange(product.id, e.target.value)}
-                      className="bg-[#0A0A0A] text-white border border-[#2C2C2C] text-[9px] px-2 py-1.5 outline-none cursor-pointer hover:border-white focus:border-[#4ADE80] w-full sm:w-auto"
-                    >
-                      {Object.keys(materialSpecs).map((mat) => (
-                        <option key={mat} value={mat}>
-                          {materialSpecs[mat].label}
-                        </option>
-                      ))}
-                    </select>
+                {/* Config Options & Pricing */}
+                <div>
+                  <div className="border-t border-white/10 pt-6 space-y-4 mb-6">
+                    {/* Material selection pills */}
+                    <div className="flex flex-col gap-2">
+                      <span className="text-[9px] text-white/40 font-bold uppercase">Material:</span>
+                      <div className="flex gap-2">
+                        {Object.keys(materialSpecs).map(mKey => (
+                          <button
+                            key={mKey}
+                            onClick={() => handleMaterialChange(product.id, mKey)}
+                            className={`px-3 py-1.5 border text-[10px] uppercase font-bold rounded-lg transition-all cursor-pointer ${
+                              currentMat === mKey 
+                                ? 'border-[#4ADE80] text-[#4ADE80] bg-[#4ADE80]/5' 
+                                : 'border-white/10 text-white/60 hover:border-white/30'
+                            }`}
+                          >
+                            {mKey}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Color selection dots */}
+                    <div className="flex flex-col gap-2">
+                      <span className="text-[9px] text-white/40 font-bold uppercase">Color Scheme:</span>
+                      <div className="flex flex-wrap gap-2">
+                        {Object.entries(colors).map(([cKey, colorVal]) => (
+                          <button
+                            key={cKey}
+                            onClick={() => handleColorChange(product.id, cKey)}
+                            className={`flex items-center gap-2 px-2.5 py-1.5 border text-[9px] uppercase font-bold rounded-lg transition-all cursor-pointer ${
+                              currentCol === cKey 
+                                ? 'border-white text-white' 
+                                : 'border-white/10 text-white/40 hover:border-white/20'
+                            }`}
+                          >
+                            <span className="w-2.5 h-2.5 rounded-full border border-white/20" style={{ backgroundColor: colorVal.hex }} />
+                            {cKey}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-1 sm:gap-0 mb-4">
-                    <span className="text-[9px] text-[#6B6B6B] tracking-widest font-bold">COLOR SCHEME:</span>
-                    <select
-                      value={colorsState[product.id] || 'MATTE BLACK'}
-                      onChange={(e) => handleColorChange(product.id, e.target.value)}
-                      className="bg-[#0A0A0A] text-white border border-[#2C2C2C] text-[9px] px-2 py-1.5 outline-none cursor-pointer hover:border-white focus:border-[#4ADE80] w-full sm:w-auto"
-                    >
-                      {Object.keys(colors).map((colorKey) => (
-                        <option key={colorKey} value={colorKey}>
-                          {colors[colorKey].label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="text-2xl font-bold text-[#4ADE80] font-display">
-                      ₹{price}
-                    </span>
-                    <button
+                  <div className="flex items-center justify-between gap-6 border-t border-white/10 pt-6">
+                    <div>
+                      <span className="text-[9px] text-white/40 block">ESTIMATED PRICE</span>
+                      <span className="font-display text-3xl font-black text-[#4ADE80]">₹{price}</span>
+                    </div>
+                    <button 
                       onClick={() => addToCart(product)}
-                      className="border border-[#4ADE80] bg-[#4ADE80]/5 text-[#4ADE80] hover:bg-[#4ADE80] hover:text-black transition-all px-4 py-2 text-[10px] tracking-widest font-bold uppercase cursor-pointer"
+                      className="flex-1 border border-[#4ADE80] bg-[#4ADE80]/5 text-[#4ADE80] hover:bg-[#4ADE80] hover:text-black transition-all py-4 px-6 rounded-xl text-xs font-bold uppercase tracking-widest cursor-pointer"
                     >
                       [ QUEUE PRINT ]
                     </button>
                   </div>
                 </div>
-
               </div>
             </div>
           );
