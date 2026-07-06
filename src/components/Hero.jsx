@@ -26,8 +26,27 @@ export default function Hero() {
     mouseY.set(y);
   };
 
+  const handleTouchMove = (e) => {
+    if (!containerRef.current || e.touches.length === 0) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const touch = e.touches[0];
+    
+    // Map touch coordinates relative to the container box to SVG coordinates (1200x500)
+    const x = ((touch.clientX - rect.left) / rect.width) * 1200;
+    const y = ((touch.clientY - rect.top) / rect.height) * 500;
+    
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
   const handleMouseLeave = () => {
     // Smoothly snap back to center when cursor leaves
+    mouseX.set(600);
+    mouseY.set(250);
+  };
+
+  const handleTouchEnd = () => {
+    // Smoothly snap back to center when touch ends
     mouseX.set(600);
     mouseY.set(250);
   };
@@ -43,7 +62,10 @@ export default function Hero() {
         ref={containerRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         whileHover="hover"
+        whileTap="hover"
         initial="initial"
         className="relative w-full bg-transparent group cursor-default"
       >
@@ -108,8 +130,9 @@ export default function Hero() {
               fill="white"
               dominantBaseline="central"
               textAnchor="middle"
-              className="font-display font-black text-[15vw] sm:text-[13vw] md:text-[11rem] lg:text-[13rem]"
+              className="font-display font-black"
               style={{ 
+                fontSize: '180px',
                 letterSpacing: '0.08em',
                 userSelect: 'none'
               }}
@@ -142,8 +165,9 @@ export default function Hero() {
               dominantBaseline="central"
               textAnchor="middle"
               dy="0.55rem"
-              className="font-teko font-bold text-[15vw] sm:text-[13vw] md:text-[11rem] lg:text-[13rem]"
+              className="font-teko font-bold"
               style={{ 
+                fontSize: '200px',
                 letterSpacing: 'normal', // Normal letter spacing allows Devanagari ligatures to combine correctly
                 userSelect: 'none',
                 filter: 'drop-shadow(0px 0px 15px rgba(74,222,128,0.55))'
